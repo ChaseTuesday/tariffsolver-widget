@@ -1,0 +1,37 @@
+
+body {
+  font-family: 'Segoe UI', Arial, sans-serif;
+  background: #f7f9fb;
+  padding: 20px;
+  margin: 0;
+}
+.container {
+  max-width: 600px;
+  margin: auto;
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+textarea, select {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+}
+button {
+  padding: 10px 15px;
+  background: #2D3748;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+#result {
+  margin-top: 20px;
+}
+@media (max-width: 600px) {
+  .container {
+    width: 100%;
+    padding: 1em;
+  }
+}

@@ -1,0 +1,29 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>TariffSolver-lite Widget (Subdomain Version)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>TariffSolver-lite Widget</h1>
+    <form id="classificationForm">
+      <label for="description">Product Description:</label>
+      <textarea id="description" placeholder="e.g. cotton t-shirt for adults"></textarea>
+      <label for="country">Destination Country:</label>
+      <select id="country">
+        <option value="US">United States</option>
+        <option value="CA">Canada</option>
+        <option value="GB">United Kingdom</option>
+      </select>
+      <button type="submit" id="submitBtn">Submit</button>
+    </form>
+    <button onclick="setExample()">Try Example</button>
+    <div id="result" aria-live="polite"></div>
+  </div>
+  <script src="/script.js"></script>
+</body>
+</html>
