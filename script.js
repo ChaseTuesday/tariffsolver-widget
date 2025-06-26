@@ -1,43 +1,58 @@
+document.getElementById('classificationForm')
+  .addEventListener('submit', function (e) {
+    e.preventDefault();
+    classifyProduct();
+  });
 
-document.getElementById('classificationForm').addEventListener('submit', async function(e) {
-  e.preventDefault();
-
-  const description = document.getElementById('description').value.trim();
+async function classifyProduct() {
+  const description = document.getElementById('description').value;
   const country = document.getElementById('country').value;
   const resultBox = document.getElementById('result');
-  const submitBtn = document.getElementById('submitBtn');
+  const loading = document.getElementById('loading');
 
-  if (!description || description.length < 5) {
-    alert("Please enter a detailed product description.");
-    return;
-  }
-
-  submitBtn.disabled = true;
-  submitBtn.textContent = "Classifying...";
+  resultBox.innerHTML = '';
+  loading.style.display = 'block';
 
   try {
-    const response = await fetch('https://api.tariffsolver.com/classify', {
+    const response = await fetch('https://tslite-api.onrender.com/calculate', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ description, country })
+      body: JSON.stringify({ description, price: 100, country }) // dummy price to match backend model
     });
 
+    if (!response.ok) {
+      throw new Error(`Network error: ${response.status}`);
+    }
+
     const data = await response.json();
+    console.log('✅ API response:', data); // for dev/debug
+
+    loading.style.display = 'none';
+
     resultBox.innerHTML = `
-      <h3>Classification Result</h3>
-      <p><strong>HS Code:</strong> ${data.hs_code}</p>
-      <p><strong>Duty Rate:</strong> ${data.duty_rate}%</p>
-      <p><strong>Confidence:</strong> ${data.confidence}%</p>
+      <strong>Classification result</strong><br>
+      HTS code: ${data.hts_code}<br>
+      Duty: ${data.duty}%<br>
+      VAT: ${data.vat}%<br>
+      Total Landed Cost: $${data.total_cost}<br>
+      Confidence: ${data.confidence}<br>
+      <em>${explainConfidence(data.confidence)}</em><br><br>
+      <strong>Rationale:</strong> ${data.rationale}
     `;
-  } catch (err) {
-    resultBox.innerHTML = "Something went wrong. Please try again.";
-  } finally {
-    submitBtn.disabled = false;
-    submitBtn.textContent = "Submit";
+  } catch (error) {
+    console.error('❌ API call failed:', error);
+    loading.style.display = 'none';
+    resultBox.innerHTML = '❌ Something went wrong. Please try again.';
   }
-});
+}
+
+function explainConfidence(confidence) {
+  if (confidence >= 90) return 'High confidence — Ready for use.';
+  if (confidence >= 70) return 'Medium confidence — Review recommended.';
+  return 'Low confidence — Please double check.';
+}
 
 function setExample() {
-  document.getElementById('description').value = "leather hiking boots with rubber soles";
-  document.getElementById('country').value = "US";
+  document.getElementById('description').value = 'leather hiking boots with rubber soles';
+  document.getElementById('country').value = 'US';
 }
