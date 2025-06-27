@@ -1,3 +1,4 @@
+// Attach form submission handler
 document.getElementById('classificationForm')
   .addEventListener('submit', function (e) {
     e.preventDefault();
@@ -9,6 +10,7 @@ function setExample() {
   document.getElementById('country').value = 'US';
 }
 
+// Main classifier function
 async function classifyProduct() {
   const description = document.getElementById('description').value;
   const country = document.getElementById('country').value;
@@ -24,38 +26,40 @@ async function classifyProduct() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         description,
-        country,
-        price: 100 // Dummy static price for API compatibility
+        price: 100,  // dummy value to match backend model
+        country
       })
     });
 
     if (!response.ok) {
-      throw new Error(`HTTP error: ${response.status}`);
+      throw new Error(`Network error: ${response.status}`);
     }
 
     const data = await response.json();
-    console.log("✅ API response:", data);
+    console.log('✅ API response:', data);  // For debugging
 
     loading.style.display = 'none';
 
     resultBox.innerHTML = `
-      <strong>HTS Code:</strong> ${data.hts_code}<br>
-      <strong>Duty:</strong> ${data.duty}%<br>
-      <strong>VAT:</strong> ${data.vat}%<br>
-      <strong>Total Landed Cost:</strong> $${data.total_cost}<br>
-      <strong>Confidence:</strong> ${data.confidence}<br>
-      <em>${confidenceText(data.confidence)}</em><br><br>
-      <strong>Rationale:</strong><br>${data.rationale}
+      <strong>Classification result</strong><br>
+      HTS code: ${data.hts_code}<br>
+      Duty: ${data.duty}%<br>
+      VAT: ${data.vat}%<br>
+      Total Landed Cost: $${data.total_cost}<br>
+      Confidence: ${data.confidence}<br>
+      <em>${explainConfidence(data.confidence)}</em><br><br>
+      <em>${data.rationale}</em>
     `;
-  } catch (err) {
-    console.error("❌ Error during classification:", err);
+  } catch (error) {
     loading.style.display = 'none';
+    console.error('❌ API call failed:', error);
     resultBox.innerHTML = '❌ Something went wrong. Please try again.';
   }
 }
 
-function confidenceText(score) {
-  if (score >= 0.9) return 'High confidence – ready for use';
-  if (score >= 0.7) return 'Medium confidence – review recommended';
-  return 'Low confidence – please double check';
+// Confidence explanation
+function explainConfidence(confidence) {
+  if (confidence >= 0.9) return 'High confidence — Ready for use.';
+  if (confidence >= 0.7) return 'Medium confidence — Review recommended.';
+  return 'Low confidence — Please double check.';
 }
